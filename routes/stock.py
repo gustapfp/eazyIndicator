@@ -22,12 +22,13 @@ async def get_all_stocks() -> list:
 
 @stock_router.get('/{paper}', status_code=status.HTTP_200_OK)
 async def get_stock(paper) -> dict:
-    stock = stock_entity(ibov_collection.find_one({"paper":paper}))
+    stock = ibov_collection.find_one({"paper":paper})
     if not stock:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND, 
             detail= f"The stock {paper}  doesn't exist!"
         )
+    stock = stock_entity(ibov_collection.find_one({"paper":paper}))
     return stock
 
 @stock_router.post('/', status_code=status.HTTP_201_CREATED)
@@ -42,6 +43,12 @@ async def post_stock(stock: Stock) -> dict:
 
 @stock_router.put('/{paper}', status_code=status.HTTP_200_OK)
 async def put_stock(paper, stock:Stock) -> dict:
+    stock = ibov_collection.find_one({"paper":paper})
+    if not stock:
+        raise HTTPException(
+            status_code = status.HTTP_404_NOT_FOUND, 
+            detail= f"The stock {paper}  doesn't exist!"
+        )
     stock = ibov_collection.find_one_and_update(
             {
             "paper":paper
@@ -52,11 +59,6 @@ async def put_stock(paper, stock:Stock) -> dict:
             }
         )
     
-    if not stock:
-        raise HTTPException(
-            status_code = status.HTTP_404_NOT_FOUND, 
-            detail= f"The stock {paper}  doesn't exist!"
-        )
     return stock
     
     # return stock_entity(ibov_collection.find_one({"paper":paper}))
@@ -64,11 +66,12 @@ async def put_stock(paper, stock:Stock) -> dict:
 
 @stock_router.delete('/{paper}', status_code=status.HTTP_202_ACCEPTED)
 async def delete_stock(paper) -> dict:
-    stock = stock_entity(ibov_collection.find_one_and_delete({'paper': paper}))
+    stock = ibov_collection.find_one({"paper":paper})
     if not stock:
         raise HTTPException(
             status_code = status.HTTP_404_NOT_FOUND, 
             detail= f"The stock {paper}  doesn't exist!"
         )
+    stock = stock_entity(ibov_collection.find_one_and_delete({'paper': paper}))
     return stock
     
