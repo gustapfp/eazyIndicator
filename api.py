@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 
 client_app = [
+    "http://localhost:3000"
 
 ]
 
@@ -18,3 +19,4 @@ app.add_middleware(CORSMiddleware(
 	allow_methods=["*"], 
 	alloe_headers = ["*"]
 ))
+
