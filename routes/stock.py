@@ -8,7 +8,7 @@ stock_router = APIRouter(
     prefix='/stock'
 )
 
-@stock_router.get('/all')
+@stock_router.get('/')
 async def get_all_stocks() -> list:
     return stock_list_entity(ibov_collection.find())
 
@@ -19,5 +19,27 @@ async def get_stock(paper) -> dict:
 @stock_router.post('/')
 async def post_stock(stock: Stock) -> dict:
     new_stock = ibov_collection.insert_one(dict(stock))
-    return stock_entity(ibov_collection.find_one({"_id": new_stock.inserted_id}))
+    return stock_entity(ibov_collection.find_one(
+        {
+            "_id": new_stock.inserted_id
+            }
 
+        ))
+
+@stock_router.put('/{paper}')
+async def put_stock(paper, stock:Stock) -> dict:
+    ibov_collection.find_one_and_update(
+            {
+            "paper":paper
+            }, 
+            {
+                "$set": dict(stock)
+
+            }
+        )
+    return stock_entity(ibov_collection.find_one({"paper":paper}))
+
+
+@stock_router.delete('/{paper}')
+async def delete_stock(paper) -> dict:
+    return stock_entity(ibov_collection.find_one_and_delete({'paper': paper}))
