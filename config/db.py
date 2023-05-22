@@ -4,4 +4,6 @@ from pathlib import os
 
 load_dotenv()
 connection = MongoClient(str(os.getenv('DATABASE_CONNECTION_STRING')))
-print(connection)
+db = connection.eazy_indicator
+ibov_collection = connection.eazy_indicator.ibov
+print(ibov_collection)
